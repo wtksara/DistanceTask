@@ -31,23 +31,25 @@ namespace DistanceTask
         public static Coordinates? ChangeFromPostCodeToCoordinates(string postcode)
         {
             var encodedPostCode = String.Concat(postcode.Where(c => !Char.IsWhiteSpace(c)));
-            // Download the JSON file with details about that postcode
+            // Download the JSON which contains details about that postcode
             var url = string.Format("http://api.postcodes.io/postcodes/{0}", encodedPostCode);
             using (WebClient wc = new WebClient())
             {
                 try
                 {
                     var json = wc.DownloadString(url);
+                    // Usage of JSON parser
                     var data = (JObject)JsonConvert.DeserializeObject(json);
 
                     return new Coordinates
                         {
-                            // Get the data from JSON
+                            // Get the data about longitude and latitude of postcode
                             Longitude = data["result"]["longitude"].Value<double>(),
                             Latitude = data["result"]["latitude"].Value<double>()
                         };
                    
                 }
+                // If the postcode has not been found return null
                 catch {
                     return null;
                 }
@@ -85,10 +87,13 @@ namespace DistanceTask
     {
         static void Main(string[] args)
         {
-            var distance = Distance.DistanceBetweenTwoPostCodes("BS1 6Q", "B1 2HL");
+            // Check the distance
+            var distance = Distance.DistanceBetweenTwoPostCodes("BS1 6QQ", "B1 2HL");
             if (distance.HasValue)
             {
+                // Write result as a output for user
                 Console.WriteLine(distance.Value + " miles"); 
+                // Write a result to the log file
                 System.IO.File.AppendAllText(@"c:\log.txt", "Success of  the calculation of the distance. Distance: " + distance.Value + "\n");
             }
             else
