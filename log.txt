@@ -1,0 +1,2 @@
+Calculation of the distance failed 
+Success of  the calculation of the distance. Distance: 76,58869426865974
